@@ -1,65 +1,161 @@
-import Image from "next/image";
+/**
+ * / — もちスラ brain トップページ（ノートの表紙）
+ *
+ * 既存のヒーロー ＋ BNS理論セクションに加え、
+ * brain最新記事とメルマガCTAを追加した統合ランディング。
+ */
+import { getAllLabPosts } from "@/lib/lab";
+import LabCard from "@/components/LabCard";
 
 export default function Home() {
+  const latestPosts = getAllLabPosts().slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+    <div className="flex min-h-screen flex-col transition-colors duration-500">
+      {/* ── Background decoration ── */}
+      <div className="fixed inset-0 lab-gradient opacity-10 pointer-events-none" />
+
+      {/* ── Hero Section ── */}
+      <section className="relative flex flex-col items-center justify-center py-24 px-6 text-center lg:py-32">
+        <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-primary">
+          Clinical Research Lab
+        </h2>
+        <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl">
+          技術に、裏付けられた
+          <br />
+          <span className="text-primary italic">静かな確信</span>を。
+        </h1>
+        <p className="mt-8 max-w-2xl text-lg leading-8 opacity-70 font-[family-name:var(--font-serif)]">
+          病院勤務15年の作業療法士が辿り着いた、身体・神経・物語を繋ぐ臨床の答え。
+          <br />
+          「理論通りにいかない」と悩むすべてのセラピストへの、安全基地。
+        </p>
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="/lab"
+            className="flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+          >
+            <span className="text-xl">🧪</span>
+            Labを覗く
+          </a>
+          <a
+            href="https://note.com/mochisuranote"
+            className="rounded-full border border-primary/30 px-8 py-4 text-lg font-bold text-primary transition-all hover:bg-primary/5"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+            📝 完成品を読む（note）
           </a>
         </div>
-      </main>
+      </section>
+
+      {/* ── BNS Theory Section ── */}
+      <section id="bns" className="py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-20 text-center">
+            <h2 className="text-3xl font-bold sm:text-4xl font-[family-name:var(--font-hand)]">
+              BNS Theory
+            </h2>
+            <p className="mt-4 opacity-70 italic font-[family-name:var(--font-serif)]">
+              臨床を解き明かす、3つの層
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-body">
+              <div className="mb-6 text-4xl">🦴</div>
+              <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-green)" }}>
+                Body (身体)
+              </h3>
+              <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
+                解剖学・起始停止を超えて。痛みは「患部の故障」ではなく「脳のエラー」であるという視点から、防衛反射を解除します。
+              </p>
+            </div>
+
+            <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-nerve">
+              <div className="mb-6 text-4xl">🧠</div>
+              <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-purple)" }}>
+                Nerve (神経)
+              </h3>
+              <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
+                触れることは、神経を調律すること。オキシトシンと迷走神経を活用し、身体を「安全モード」へと導きます。
+              </p>
+            </div>
+
+            <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-story">
+              <div className="mb-6 text-4xl">🧭</div>
+              <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-amber)" }}>
+                Story (物語)
+              </h3>
+              <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
+                痛みの中にある文脈に耳を傾ける。セラピストが「安全基地」となることで、初めてクライアントは鎧を脱ぐことができます。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── もちスラ Lab（最新の脳内メモ）── */}
+      {latestPosts.length > 0 && (
+        <section className="py-24 bg-paper/30">
+          <div className="mx-auto max-w-5xl px-6">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold font-[family-name:var(--font-hand)]">
+                📒 最近のLabメモ
+              </h2>
+              <p className="mt-3 text-pencil italic text-sm font-[family-name:var(--font-serif)]">
+                まだ完成してない。でも、ここにある。
+              </p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {latestPosts.map((post, i) => (
+                <div key={post.slug} style={{ animationDelay: `${i * 100}ms` }}>
+                  <LabCard
+                    slug={post.slug}
+                    title={post.title}
+                    date={post.date}
+                    category={post.category}
+                    tags={post.tags}
+                    excerpt={post.excerpt}
+                    relatedNote={post.relatedNote}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <a
+                href="/lab"
+                className="text-sm font-bold text-clinical-blue underline underline-offset-4 transition-colors hover:text-primary"
+              >
+                もっと覗く →
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── メルマガ CTA ── */}
+      <section className="py-20">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <div className="graph-paper rounded-2xl p-10">
+            <div className="mb-4 text-4xl">💌</div>
+            <h2 className="mb-3 text-2xl font-bold font-[family-name:var(--font-hand)] text-ink">
+              きだからの手紙
+            </h2>
+            <p className="mb-8 text-sm leading-relaxed text-pencil font-[family-name:var(--font-serif)]">
+              note やブログには書けない、脳内の「最新のスパーク」を加工せずにそのまま届けます。
+            </p>
+            <a
+              href="/newsletter"
+              className="inline-block rounded-full bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              詳細を見る
+            </a>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,26 +1,219 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-pencil: var(--pencil);
+  --color-highlight: var(--highlight);
+  --color-redpen: var(--redpen);
+  --color-clinical-blue: var(--clinical-blue);
+  --color-tab-green: var(--tab-green);
+  --color-tab-purple: var(--tab-purple);
+  --color-tab-amber: var(--tab-amber);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  --font-serif: var(--font-noto-serif-jp), "Noto Serif JP", serif;
+  --font-hand: var(--font-zen-kurenaido), "Zen Kurenaido", cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ══════════════════════════════════════════
+   Deep Sea カラーシステム
+   ──────────────────────────────────────────
+   深海の静けさと生物発光（Bioluminescence）を
+   デザイン言語として統合。
+   ══════════════════════════════════════════ */
+
+:root {
+  /* 深海の基盤色 */
+  --background: #0a1628;          /* 深海の藍：メインの海底 */
+  --foreground: #c8d6e5;          /* 月光が海面を通過した後の銀青 */
+  --primary: #00d2ff;             /* 生物発光シアン：CTAとアクセント */
+  --accent: #7c5cf5;              /* 深海クラゲの紫発光 */
+  --card: #0f2035;                /* 海底の岩棚 */
+  --paper: #0d1a2e;               /* 研究ノートの紙：深い紺 */
+  --ink: #e0ecf7;                 /* 蛍光プランクトンの白：本文テキスト */
+  --pencil: #5a7a9b;              /* 水深200mの薄明光：サブテキスト */
+  --highlight: rgba(0,210,255,0.15); /* 生物発光のハイライトグロウ */
+  --redpen: #ff6b6b;              /* 警告灯の赤 */
+  --clinical-blue: #00d2ff;       /* 生物発光シアン（リンク用） */
+  --tab-green: #2dd4a8;           /* Body: 海藻のエメラルド */
+  --tab-purple: #a78bfa;          /* Nerve: 深海クラゲの薄紫 */
+  --tab-amber: #fbbf24;           /* Story: アンコウの黄金光 */
+
+  /* 深海グラデーション用 */
+  --deep-surface: #0e1f38;        /* 水深50m：やや明るい藍 */
+  --deep-mid: #091526;            /* 水深500m：中間層 */
+  --deep-abyss: #050e1a;          /* 水深3000m：深淵 */
 }
 
 body {
-  background: var(--background);
+  /* 深海のグラデーション背景：海面から深淵へ */
+  background:
+    linear-gradient(
+      180deg,
+      var(--deep-surface) 0%,
+      var(--deep-mid) 40%,
+      var(--deep-abyss) 100%
+    );
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ── Glass（ヘッダー用）── 深海の圧縮された水のレンズ */
+.glass {
+  background: rgba(10, 22, 40, 0.75);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid rgba(0, 210, 255, 0.08);
+}
+
+/* ── Lab Gradient（背景装飾）── 深海の光源 */
+.lab-gradient {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(0,210,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(124,92,245,0.04) 0%, transparent 50%);
+}
+
+/* ── 方眼紙テクスチャ ── 深海研究ノート */
+.graph-paper {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(rgba(0,210,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,255,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── 付箋タブ ── BNSカテゴリの発光バー */
+.tab-body { border-left: 4px solid var(--tab-green); }
+.tab-nerve { border-left: 4px solid var(--tab-purple); }
+.tab-story { border-left: 4px solid var(--tab-amber); }
+
+.tab-body::before { background: var(--tab-green); }
+.tab-nerve::before { background: var(--tab-purple); }
+.tab-story::before { background: var(--tab-amber); }
+
+/* ── 蛍光ペン ── 生物発光ハイライト */
+.highlight-pen {
+  background: linear-gradient(transparent 60%, var(--highlight) 60%);
+  padding: 0 2px;
+}
+
+/* ── もちスラ注釈（マージンメモ）── */
+.mochi-comment {
+  position: relative;
+  background: rgba(13, 26, 46, 0.8);
+  border: 1px dashed rgba(0, 210, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--pencil);
+  margin: 16px 0;
+}
+.mochi-comment::before {
+  content: "🫠 もちスラ memo";
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--clinical-blue);
+  margin-bottom: 4px;
+}
+
+/* ── ページ遷移アニメーション ── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.4s ease-out both;
+}
+
+/* ── もちスラ瞬きアニメーション ── */
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+.mochi-blink {
+  animation: blink 8s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* ── 深海パーティクル ── 漂うプランクトンの光点 */
+@keyframes float-particle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  50% { transform: translateY(-20px) translateX(8px); opacity: 0.7; }
+}
+
+/* ── カードホバー ── 深海発光エフェクト */
+.brain-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
+  border: 1px solid rgba(0, 210, 255, 0.06);
+}
+.brain-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 32px rgba(0, 210, 255, 0.08),
+    0 0 0 1px rgba(0, 210, 255, 0.12);
+  border-color: rgba(0, 210, 255, 0.15);
+}
+
+/* ── にじみボーダー ── 水中の揺らぎ */
+.border-bleed {
+  border-image: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 210, 255, 0.15),
+    transparent
+  ) 1;
+}
+
+/* ── Prose（記事本文のスタイリング）── */
+.prose-brain h1,
+.prose-brain h2,
+.prose-brain h3 {
+  font-family: var(--font-hand), "Zen Kurenaido", cursive;
+  color: var(--ink);
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+.prose-brain p {
+  font-family: var(--font-serif), "Noto Serif JP", serif;
+  line-height: 2;
+  margin-bottom: 1.2em;
+  color: var(--ink);
+}
+.prose-brain blockquote {
+  border-left: 3px solid var(--clinical-blue);
+  padding-left: 1em;
+  color: var(--pencil);
+  font-style: italic;
+}
+.prose-brain strong {
+  background: linear-gradient(transparent 60%, var(--highlight) 60%);
+  font-weight: 700;
+  color: #ffffff;
+}
+.prose-brain a {
+  color: var(--clinical-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-brain ul, .prose-brain ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+.prose-brain li {
+  line-height: 1.8;
+  margin-bottom: 0.3em;
 }
