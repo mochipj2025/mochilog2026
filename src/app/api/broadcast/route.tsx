@@ -28,10 +28,12 @@ export async function POST(request: Request) {
     const { secret, subject, html, testEmail } = body;
 
     // ── 認証 ──
-    const expectedSecret = process.env.BROADCAST_SECRET;
-    if (!expectedSecret || secret !== expectedSecret) {
+    const expectedSecret = process.env.BROADCAST_SECRET?.trim();
+    const providedSecret = secret?.trim();
+
+    if (!expectedSecret || providedSecret !== expectedSecret) {
       return NextResponse.json(
-        { error: "認証に失敗しました。" },
+        { error: "認証に失敗しました。パスワードが一致しません。" },
         { status: 401 }
       );
     }
