@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Resend API Error:", error);
       return NextResponse.json(
-        { error: "メールの送信に失敗しました。時間をおいて再度お試しください。" },
+        { error: `Resend Error: ${JSON.stringify(error)}` },
         { status: 500 }
       );
     }
@@ -69,9 +69,10 @@ export async function POST(request: Request) {
     console.log("✅ ウェルカムメール送信成功:", data);
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Subscription Error:", error?.message || error);
+    const errorMsg = error?.message || String(error);
+    console.error("Subscription Error:", errorMsg);
     return NextResponse.json(
-      { error: "登録に失敗しました。時間をおいて再度お試しください。" },
+      { error: `System Error: ${errorMsg}` },
       { status: 500 }
     );
   }
