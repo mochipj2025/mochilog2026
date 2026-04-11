@@ -81,7 +81,7 @@ export default function NewsletterPage() {
             </div>
 
             {/* ── 登録フォーム ── */}
-            <form onSubmit={handleSubmit} className="mx-auto flex max-w-sm flex-col gap-3 sm:flex-row">
+            <form onSubmit={handleSubmit} action="/api/subscribe" method="POST" className="mx-auto flex max-w-sm flex-col gap-3 sm:flex-row">
               <input
                 type="email"
                 required
