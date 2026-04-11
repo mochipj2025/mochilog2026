@@ -68,23 +68,37 @@ export default function AdminBroadcastPage() {
     }
   };
 
-  // ── 認証画面 ──
   if (!authenticated) {
     return (
       <div className="mx-auto max-w-md px-6 py-20">
-        <div className="graph-paper rounded-2xl p-10 text-center">
-          <h1 className="mb-6 text-2xl font-bold text-ink">🔐 管理者認証</h1>
+        <div className="graph-paper rounded-2xl p-10 text-center space-y-8">
+          <div className="relative mx-auto w-24 h-24">
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse blur-lg" />
+            <img
+              src="/images/mochisura_avatar.png"
+              alt="Mochi-Sura"
+              className="relative w-full h-full object-cover rounded-full border border-primary/20 shadow-xl"
+            />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-ink tracking-tight font-[family-name:var(--font-zen-kurenaido)]">
+              M.O.C.H.I. LABO
+            </h1>
+            <p className="text-xs text-pencil mt-1 uppercase tracking-widest">
+              Administrator Access
+            </p>
+          </div>
           <form onSubmit={handleAuth} className="space-y-4">
             <input
               type="password"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
               placeholder="配信パスワードを入力"
-              className="w-full rounded-lg border border-pencil/30 bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-pencil/20 bg-paper px-4 py-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
             />
             <button
               type="submit"
-              className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105"
+              className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-xl transition-transform hover:scale-105"
             >
               認証する
             </button>
@@ -96,11 +110,24 @@ export default function AdminBroadcastPage() {
 
   // ── 配信画面 ──
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="mb-2 text-3xl font-bold text-ink">📬 メルマガ配信</h1>
-      <p className="mb-8 text-sm text-pencil">
-        「きだからの手紙」を全購読者に届けます。
-      </p>
+    <div className="mx-auto max-w-3xl px-6 py-12 lg:py-20">
+      <div className="flex items-center gap-6 mb-12 border-b border-primary/10 pb-8">
+        <div className="w-20 h-20 flex-shrink-0">
+          <img
+            src="/images/mochisura_avatar.png"
+            alt="Mochi-Sura"
+            className="w-full h-full object-cover rounded-full border border-primary/20 shadow-lg"
+          />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-ink font-[family-name:var(--font-zen-kurenaido)]">
+            📬 メルマガ配信
+          </h1>
+          <p className="text-sm text-pencil">
+            「きだからの手紙」を全購読者の安全基地へ届けます。
+          </p>
+        </div>
+      </div>
 
       <div className="space-y-6">
         {/* 件名 */}

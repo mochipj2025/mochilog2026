@@ -9,6 +9,7 @@ import {
   Text,
   Hr,
   Link,
+  Img,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -27,6 +28,13 @@ export const MochiLetter = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
+          <Img
+            src="https://lab.mochisura-lab.com/images/mochisura_avatar.png"
+            width="80"
+            height="80"
+            alt="Mochi-Sura"
+            style={avatar}
+          />
           <Heading style={h1}>もちスラ Lab</Heading>
           <Text style={subtitle}>Connecting the Pulse. Visualizing the Process.</Text>
         </Section>
@@ -139,4 +147,10 @@ const footerLink = {
 const link = {
   color: "#00d2ff",
   textDecoration: "underline",
+};
+
+const avatar = {
+  display: "block",
+  margin: "0 auto",
+  borderRadius: "50%",
 };

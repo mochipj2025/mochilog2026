@@ -37,14 +37,24 @@ export default function AboutPage() {
       <div className="fixed inset-0 lab-gradient opacity-5 pointer-events-none" />
       
       <article className="relative mx-auto max-w-3xl px-6 py-20 lg:py-32">
-        {/* ── Header ── */}
-        <header className="mb-16 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-[family-name:var(--font-zen-kurenaido)] text-primary">
-            Connecting the Pulse.
-          </h1>
-          <p className="mt-4 text-lg opacity-60 font-[family-name:var(--font-noto-serif-jp)] italic">
-            指先のパルセーション、人との接続。
-          </p>
+        {/* ── Mascot & Header ── */}
+        <header className="mb-16 text-center space-y-6">
+          <div className="relative mx-auto w-32 h-32 sm:w-40 sm:h-40">
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse blur-xl" />
+            <img
+              src="/images/mochisura_avatar.png"
+              alt="Mochi-Sura mascot"
+              className="relative w-full h-full object-cover rounded-full border-2 border-primary/30 shadow-2xl glass"
+            />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-[family-name:var(--font-zen-kurenaido)] text-primary">
+              Connecting the Pulse.
+            </h1>
+            <p className="text-lg opacity-60 font-[family-name:var(--font-noto-serif-jp)] italic">
+              指先のパルセーション、人との接続。
+            </p>
+          </div>
         </header>
 
         {/* ── Main Content ── */}
