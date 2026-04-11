@@ -8,7 +8,18 @@ import MochiLetter from "../../../emails/MochiLetter";
  */
 export const dynamic = "force-dynamic";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Resend クライアントを遅延初期化する。
+ * モジュールレベルで new Resend() を呼ぶと、ビルド時に
+ * 環境変数が存在しないためクラッシュする（Vercel のビルドエラーの原因）。
+ */
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY が設定されていません。Vercel の Environment Variables を確認してください。");
+  }
+  return new Resend(apiKey);
+}
 
 /**
  * GET: ヘルスチェック用。リダイレクト等でメソッドが化けた際の安全弁。
@@ -23,12 +34,8 @@ export async function GET() {
 /**
  * POST: メルマガ購読 & ウェルカムメール送信。
  *
- * 修正点:
- * - resend.contacts.create() を削除。API Key が "Sending access" のみのため
- *   Contacts 操作の権限がなく、かつ audienceId が空文字列だったため
- *   バリデーションエラーでクラッシュしていた。
- * - テスト段階では「メール送信のみ」に簡素化し、購読者リスト管理は
- *   Resend ダッシュボード側で行う。
+ * kida@mochisura-lab.com から深海テーマのウェルカムメールを送信する。
+ * Resend の Contacts API は使用せず、メール送信のみに特化。
  */
 export async function POST(request: Request) {
   try {
@@ -40,6 +47,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const resend = getResendClient();
 
     // ウェルカムメールを送信（kida@mochisura-lab.com から）
     const { data, error } = await resend.emails.send({
@@ -60,7 +69,7 @@ export async function POST(request: Request) {
     console.log("✅ ウェルカムメール送信成功:", data);
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Subscription Error:", error);
+    console.error("Subscription Error:", error?.message || error);
     return NextResponse.json(
       { error: "登録に失敗しました。時間をおいて再度お試しください。" },
       { status: 500 }
