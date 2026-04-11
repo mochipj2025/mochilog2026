@@ -58,6 +58,12 @@ export default function RootLayout({
             </a>
             <nav className="flex items-center gap-6 text-sm font-medium">
               <a
+                href="/about"
+                className="transition-colors hover:text-primary"
+              >
+                About
+              </a>
+              <a
                 href="/lab"
                 className="transition-colors hover:text-primary"
               >
@@ -85,9 +91,14 @@ export default function RootLayout({
         <main className="relative z-10 flex-1">{children}</main>
 
         {/* ── フッター ── */}
-        <footer className="border-t border-bleed py-8">
-          <div className="mx-auto max-w-5xl px-6 text-center text-sm opacity-50">
-            © 2026 M.O.C.H.I. LABO — Connecting the Pulse.
+        <footer className="border-t border-bleed py-10 bg-paper/50">
+          <div className="mx-auto max-w-5xl px-6 flex flex-col items-center gap-4 text-sm opacity-50">
+            <p>© 2026 M.O.C.H.I. LABO — Connecting the Pulse.</p>
+            <div className="flex gap-4">
+              <a href="/about" className="hover:text-primary underline-offset-4 hover:underline">About</a>
+              <a href="/newsletter" className="hover:text-primary underline-offset-4 hover:underline">Newsletter</a>
+              <a href="/lab" className="hover:text-primary underline-offset-4 hover:underline">Lab</a>
+            </div>
           </div>
         </footer>
       </body>

@@ -13,7 +13,9 @@ export const dynamic = "force-dynamic";
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    throw new Error("RESEND_API_KEY が設定されていません。Vercel の Environment Variables を確認してください。");
+    throw new Error(
+      "RESEND_API_KEY が設定されていません。Vercel の Environment Variables を確認してください。"
+    );
   }
   return new Resend(apiKey);
 }
@@ -29,8 +31,9 @@ export async function GET() {
 }
 
 /**
- * POST: メルマガ購読 & ウェルカムメール送信。
- * .tsx に変更し、JSX 構文でコンポーネントを渡すことでレンダリングの安定性を向上。
+ * POST: メルマガ購読処理
+ * 1. ウェルカムメールを送信
+ * 2. Resend Audience に登録者を追加（購読者リスト管理）
  */
 export async function POST(request: Request) {
   try {
@@ -45,12 +48,11 @@ export async function POST(request: Request) {
 
     const resend = getResendClient();
 
-    // ウェルカムメールを送信
+    // ── 1. ウェルカムメールを送信 ──
     const { data, error } = await resend.emails.send({
       from: "きだ <kida@mochisura-lab.com>",
       to: email,
       subject: "きだからの手紙を受け取っていただき、ありがとうございます",
-      // NOTE: .tsx 拡張子にすることで、JSX 構文が正しく処理されるように修正
       react: <MochiLetter authorName="きだ" />,
     });
 
@@ -63,6 +65,28 @@ export async function POST(request: Request) {
     }
 
     console.log("✅ ウェルカムメール送信成功:", data);
+
+    // ── 2. Resend Audience に購読者を追加（リスト管理用） ──
+    // RESEND_AUDIENCE_ID が未設定の場合はスキップ（グレースフル・フォールバック）
+    const audienceId = process.env.RESEND_AUDIENCE_ID;
+    if (audienceId) {
+      try {
+        await resend.contacts.create({
+          audienceId,
+          email,
+          unsubscribed: false,
+        });
+        console.log("✅ Audience に購読者追加:", email);
+      } catch (contactErr: any) {
+        // Audience 追加に失敗してもメール送信自体は成功しているため、
+        // エラーをログに記録するだけで処理を止めない。
+        console.warn(
+          "⚠️ Audience 追加失敗（権限不足の可能性）:",
+          contactErr?.message || contactErr
+        );
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     const errorMsg = error?.message || String(error);

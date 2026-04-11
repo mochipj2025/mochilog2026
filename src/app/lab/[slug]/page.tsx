@@ -47,10 +47,41 @@ export default async function LabPostPage({
   const post = await getLabPost(slug);
   if (!post) notFound();
 
+  // ── JSON-LD for AIEO / SEO ──
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt || post.title,
+    "datePublished": post.date,
+    "author": {
+      "@type": "Person",
+      "name": "きだ",
+      "url": "https://lab.mochisura-lab.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "M.O.C.H.I. LABO",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://lab.mochisura-lab.com/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://lab.mochisura-lab.com/lab/${post.slug || slug}`
+    }
+  };
+
   const config = categoryConfig[post.category as keyof typeof categoryConfig] || categoryConfig.Story;
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
+      {/* ── JSON-LD for AIEO ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── 戻るリンク & 日付 ── */}
       <div className="mb-8 flex items-center justify-between text-sm text-pencil">
         <a
