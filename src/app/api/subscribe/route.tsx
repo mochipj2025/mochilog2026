@@ -4,14 +4,11 @@ import MochiLetter from "../../../emails/MochiLetter";
 
 /**
  * Vercel のエッジキャッシュによる静的化を防止。
- * API Route は常に動的に実行する必要がある。
  */
 export const dynamic = "force-dynamic";
 
 /**
  * Resend クライアントを遅延初期化する。
- * モジュールレベルで new Resend() を呼ぶと、ビルド時に
- * 環境変数が存在しないためクラッシュする（Vercel のビルドエラーの原因）。
  */
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -22,7 +19,7 @@ function getResendClient() {
 }
 
 /**
- * GET: ヘルスチェック用。リダイレクト等でメソッドが化けた際の安全弁。
+ * GET: ヘルスチェック用。
  */
 export async function GET() {
   return NextResponse.json({
@@ -33,9 +30,7 @@ export async function GET() {
 
 /**
  * POST: メルマガ購読 & ウェルカムメール送信。
- *
- * kida@mochisura-lab.com から深海テーマのウェルカムメールを送信する。
- * Resend の Contacts API は使用せず、メール送信のみに特化。
+ * .tsx に変更し、JSX 構文でコンポーネントを渡すことでレンダリングの安定性を向上。
  */
 export async function POST(request: Request) {
   try {
@@ -50,12 +45,13 @@ export async function POST(request: Request) {
 
     const resend = getResendClient();
 
-    // ウェルカムメールを送信（kida@mochisura-lab.com から）
+    // ウェルカムメールを送信
     const { data, error } = await resend.emails.send({
       from: "きだ <kida@mochisura-lab.com>",
       to: email,
       subject: "きだからの手紙を受け取っていただき、ありがとうございます",
-      react: MochiLetter({ authorName: "きだ" }),
+      // NOTE: .tsx 拡張子にすることで、JSX 構文が正しく処理されるように修正
+      react: <MochiLetter authorName="きだ" />,
     });
 
     if (error) {
