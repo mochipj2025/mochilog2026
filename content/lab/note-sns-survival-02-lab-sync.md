@@ -1,7 +1,7 @@
 ---
 title: 2026年版 セラピストSNS生存戦略 Vol.2 — 「あはきガイドライン」の死線
 date: 2026-04-11T00:00:00.000Z
-category: Strategy
+category: Story
 tags:
   - SNS生存戦略
   - 広告ガイドライン

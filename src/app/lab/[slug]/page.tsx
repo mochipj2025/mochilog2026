@@ -47,7 +47,7 @@ export default async function LabPostPage({
   const post = await getLabPost(slug);
   if (!post) notFound();
 
-  const config = categoryConfig[post.category];
+  const config = categoryConfig[post.category as keyof typeof categoryConfig] || categoryConfig.Story;
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
