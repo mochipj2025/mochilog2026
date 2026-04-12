@@ -45,18 +45,18 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {/* ── ヘッダー ── */}
         <header className="sticky top-0 z-50 glass">
-          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-2 sm:px-6">
             <a href="/" className="flex items-center gap-2">
               <img
                 src="/logo.png"
                 alt="もちスラ"
                 className="mochi-blink h-8 w-8 object-contain"
               />
-              <span className="whitespace-nowrap text-base sm:text-lg font-bold tracking-tight text-primary">
+              <span className="whitespace-nowrap text-sm sm:text-lg font-bold tracking-tight text-primary">
                 もちスラ Lab
               </span>
             </a>
-            <nav className="flex items-center gap-3 sm:gap-6 text-sm font-medium">
+            <nav className="flex items-center gap-2 sm:gap-6 text-sm font-medium">
               <a
                 href="/about"
                 className="transition-colors hover:text-primary"
@@ -67,7 +67,8 @@ export default function RootLayout({
                 href="/lab"
                 className="transition-colors hover:text-primary"
               >
-                Laboratory
+                <span className="hidden sm:inline">Laboratory</span>
+                <span className="sm:hidden">Lab</span>
               </a>
               <a
                 href="https://note.com/mochisuranote"
@@ -79,7 +80,7 @@ export default function RootLayout({
               </a>
               <a
                 href="/newsletter"
-                className="shrink-0 whitespace-nowrap rounded-full bg-primary px-4 py-1.5 text-[10px] sm:text-xs font-bold text-white shadow transition-transform hover:scale-105 active:scale-95"
+                className="shrink-0 whitespace-nowrap rounded-full bg-primary px-3 sm:px-4 py-1.5 text-[10px] sm:text-xs font-bold text-white shadow transition-transform hover:scale-105 active:scale-95"
               >
                 <span className="hidden sm:inline">💌 手紙を受け取る</span>
                 <span className="sm:hidden">💌 手紙</span>
