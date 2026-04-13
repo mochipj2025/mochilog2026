@@ -2,7 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/nurturing",
-      "schedule": "0 12 * * * "
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-broadcast",
+      "schedule": "0 12 * * 2"
     }
   ]
 }
