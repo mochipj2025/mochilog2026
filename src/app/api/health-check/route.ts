@@ -13,9 +13,17 @@ export const dynamic = "force-dynamic";
  * システムの整合性と健康状態をチェックする。
  */
 export async function GET(request: Request) {
-  // セキュリティチェック (Vercel Cron Secretと同じものを使用)
+  // セキュリティチェック (Cron Secret または Broadcast Secret のいずれかで許可)
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const providedToken = authHeader?.replace("Bearer ", "").trim();
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  const broadcastSecret = process.env.BROADCAST_SECRET?.trim();
+
+  const isAuthorized = 
+    (cronSecret && providedToken === cronSecret) || 
+    (broadcastSecret && providedToken === broadcastSecret);
+
+  if (!isAuthorized) {
     return new Response("Unauthorized", { status: 401 });
   }
 
