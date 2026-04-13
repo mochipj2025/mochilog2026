@@ -1,6 +1,27 @@
 import { Lock } from "lucide-react";
 
-// ... (existing categoryConfig)
+/**
+ * LabCard — Lab記事のカードコンポーネント
+ *
+ * 左端にBNSカテゴリの色付き付箋タブを表示し、
+ * ホバーで浮き上がるインタラクションを持つ。
+ */
+
+interface LabCardProps {
+  slug: string;
+  title: string;
+  date: string;
+  category: "Body" | "Nerve" | "Story";
+  tags: string[];
+  excerpt: string;
+  relatedNote?: string;
+}
+
+const categoryConfig = {
+  Body: { color: "tab-body", emoji: "🦴", label: "Body" },
+  Nerve: { color: "tab-nerve", emoji: "🧠", label: "Nerve" },
+  Story: { color: "tab-story", emoji: "🧭", label: "Story" },
+};
 
 export default function LabCard({
   slug,
