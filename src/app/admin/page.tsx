@@ -16,11 +16,27 @@ export default function AdminBroadcastPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [result, setResult] = useState<any>(null);
   const [authenticated, setAuthenticated] = useState(false);
+  const [stats, setStats] = useState<{ total: number, eligible: number, educating: number } | null>(null);
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (secret.length > 0) {
       setAuthenticated(true);
+      
+      // 統計情報の取得
+      try {
+        const res = await fetch("/api/broadcast", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ secret, action: "stats" })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStats(data);
+        }
+      } catch (err) {
+        console.error("Stats fetch error:", err);
+      }
     }
   };
 
@@ -130,6 +146,26 @@ export default function AdminBroadcastPage() {
       </div>
 
       <div className="space-y-6">
+        {/* ステータスパネル */}
+        {stats && (
+          <div className="flex gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+            <div className="flex-1 text-center">
+              <p className="text-xs text-pencil">総購読者</p>
+              <p className="text-xl font-bold text-ink">{stats.total}名</p>
+            </div>
+            <div className="w-px bg-primary/10" />
+            <div className="flex-1 text-center">
+              <p className="text-xs text-pencil">配信対象 (7日以上)</p>
+              <p className="text-xl font-bold text-primary">{stats.eligible}名</p>
+            </div>
+            <div className="w-px bg-primary/10" />
+            <div className="flex-1 text-center">
+              <p className="text-xs text-pencil">教育中 (7日未満)</p>
+              <p className="text-xl font-bold text-pencil">{stats.educating}名</p>
+            </div>
+          </div>
+        )}
+
         {/* 件名 */}
         <div>
           <label className="mb-1 block text-sm font-bold text-ink">件名</label>

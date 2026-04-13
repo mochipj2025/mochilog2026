@@ -13,15 +13,25 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface MochiLetterProps {
-  previewText?: string;
+interface DigestLetterProps {
+  previewText: string;
+  title: string;
+  bodyContent: string;
+  nerveContent: string;
+  storyContent: string;
+  noteLink: string;
   authorName?: string;
 }
 
-export const MochiLetter = ({
-  previewText = "きだからの、未完成な思考の手紙。",
+export const DigestLetter = ({
+  previewText,
+  title,
+  bodyContent,
+  nerveContent,
+  storyContent,
+  noteLink,
   authorName = "きだ",
-}: MochiLetterProps) => (
+}: DigestLetterProps) => (
   <Html>
     <Head />
     <Preview>{previewText}</Preview>
@@ -30,56 +40,51 @@ export const MochiLetter = ({
         <Section style={header}>
           <Img
             src="https://lab.mochisura-lab.com/images/mochisura_avatar.png"
-            width="80"
-            height="80"
+            width="60"
+            height="60"
             alt="Mochi-Sura"
             style={avatar}
           />
-          <Heading style={h1}>もちスラ Lab</Heading>
-          <Text style={subtitle}>Connecting the Pulse. Visualizing the Process.</Text>
+          <Text style={subtitle}>M.O.C.H.I. LABO — Digest Letter</Text>
+          <Heading style={h2}>{title}</Heading>
         </Section>
         <Hr style={hr} />
+        
         <Section style={content}>
-          <Text style={text}>
-            こんにちは、{authorName}です。
-          </Text>
-          <Text style={text}>
-            この手紙を受け取っていただき、ありがとうございます。
-            ここは、noteやブログのような「完成品」を置く場所ではありません。
-          </Text>
-          <Text style={text}>
-            臨床の現場で感じた、まだ言葉にならない違和感や、
-            研究室（Lab）の中で火花を散らしている最新の思考の欠片を、
-            加工せずにそのままお届けします。
-          </Text>
-          <Text style={text}>
-            あなたの臨床という旅に、静かな確信を添える一通になれば幸いです。
-          </Text>
+          <Heading style={h3}>【Body】今週の臨床風景</Heading>
+          <Text style={text}>{bodyContent}</Text>
+          
           <Hr style={hr} />
-          <Text style={text}>
-            <b>【登録者限定プレゼント】</b>
-            <br />
-            まずは、わたしの最新の研究成果をまとめたレポートを受け取ってください。
-            <br />
-            <Link href="https://note.com/mochisuranote/n/xxxx" style={link}>
-              ➡ 「Google Gemini Deep Research × 臨床」活用レポート を読む
-            </Link>
-          </Text>
+          
+          <Heading style={h3}>【Nerve】知性の調律</Heading>
+          <Text style={text}>{nerveContent}</Text>
+          
+          <Hr style={hr} />
+          
+          <Heading style={h3}>【Story】未来への一歩</Heading>
+          <Text style={text}>{storyContent}</Text>
         </Section>
+
         <Hr style={hr} />
+        
+        <Section style={ctaSection}>
+          <Text style={text}>
+            この記事の全文と、さらに深い洞察はnoteで公開しています。
+          </Text>
+          <Link href={noteLink} style={button}>
+            note本編を読む
+          </Link>
+        </Section>
+
         <Section style={footer}>
           <Text style={footerText}>
-            きだ 記
+            {authorName} 記
             <br />
             M.O.C.H.I. LABO | 安全基地としての臨床
           </Text>
           <Text style={footerLink}>
             <Link href="https://lab.mochisura-lab.com" style={link}>
               Labを覗く
-            </Link>
-            {" | "}
-            <Link href="https://note.com/mochisuranote" style={link}>
-              note
             </Link>
           </Text>
         </Section>
@@ -88,7 +93,7 @@ export const MochiLetter = ({
   </Html>
 );
 
-export default MochiLetter;
+export default DigestLetter;
 
 const main = {
   backgroundColor: "#0a1628",
@@ -108,45 +113,72 @@ const header = {
   textAlign: "center" as const,
 };
 
-const h1 = {
+const h2 = {
   color: "#0a1628",
-  fontSize: "24px",
+  fontSize: "20px",
   fontWeight: "bold",
-  margin: "30px 0",
-  padding: "0",
+  margin: "20px 0",
+};
+
+const h3 = {
+  color: "#334155",
+  fontSize: "16px",
+  fontWeight: "bold",
+  margin: "15px 0 5px",
 };
 
 const subtitle = {
   color: "#64748b",
-  fontSize: "12px",
+  fontSize: "10px",
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
+  marginTop: "10px",
 };
 
 const content = {
-  padding: "20px 0",
+  padding: "10px 0",
 };
 
 const text = {
   color: "#334155",
-  fontSize: "16px",
-  lineHeight: "26px",
+  fontSize: "15px",
+  lineHeight: "24px",
   textAlign: "left" as const,
+  whiteSpace: "pre-wrap" as const,
 };
 
 const hr = {
-  borderColor: "#e2e8f0",
+  borderColor: "#f1f5f9",
   margin: "20px 0",
+};
+
+const ctaSection = {
+  textAlign: "center" as const,
+  padding: "20px 0",
+};
+
+const button = {
+  backgroundColor: "#00d2ff",
+  borderRadius: "4px",
+  color: "#fff",
+  fontSize: "16px",
+  fontWeight: "bold",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "12px 24px",
+  marginTop: "10px",
 };
 
 const footer = {
   textAlign: "center" as const,
+  marginTop: "20px",
 };
 
 const footerText = {
   color: "#64748b",
-  fontSize: "14px",
-  lineHeight: "24px",
+  fontSize: "13px",
+  lineHeight: "20px",
 };
 
 const footerLink = {
@@ -155,7 +187,7 @@ const footerLink = {
 };
 
 const link = {
-  color: "#00d2ff",
+  color: "#64748b",
   textDecoration: "underline",
 };
 

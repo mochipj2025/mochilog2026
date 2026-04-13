@@ -10,6 +10,7 @@
 import { getLabPost, getAllLabSlugs } from "@/lib/lab";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import LabGate from "@/components/LabGate";
 
 const categoryConfig = {
   Body: { emoji: "🦴", tabClass: "tab-body", color: "var(--tab-green)" },
@@ -93,44 +94,47 @@ export default async function LabPostPage({
         <time>{post.date}</time>
       </div>
 
-      {/* ── 方眼紙の記事エリア ── */}
-      <article
-        className={`graph-paper rounded-2xl p-8 sm:p-12 ${config.tabClass} animate-fade-up`}
-      >
-        {/* カテゴリバッジ */}
-        <div className="mb-4 flex items-center gap-2">
-          <span className="text-2xl">{config.emoji}</span>
-          <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: config.color }}
-          >
-            {post.category}
-          </span>
-        </div>
-
-        {/* タイトル */}
-        <h1 className="mb-8 text-3xl font-bold leading-snug text-ink font-[family-name:var(--font-hand)]">
-          {post.title}
-        </h1>
-
-        {/* 本文 */}
-        <div
-          className="prose-brain"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
-
-        {/* タグ */}
-        <div className="mt-10 flex flex-wrap gap-2 border-t border-dashed border-pencil/30 pt-6">
-          {post.tags.map((tag) => (
+      {/* ── ゲートを通す ── */}
+      <LabGate>
+        {/* ── 方眼紙の記事エリア ── */}
+        <article
+          className={`graph-paper rounded-2xl p-8 sm:p-12 ${config.tabClass} animate-fade-up`}
+        >
+          {/* カテゴリバッジ */}
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-2xl">{config.emoji}</span>
             <span
-              key={tag}
-              className="rounded-full bg-highlight/40 px-3 py-1 text-xs text-ink"
+              className="text-xs font-bold uppercase tracking-widest"
+              style={{ color: config.color }}
             >
-              #{tag}
+              {post.category}
             </span>
-          ))}
-        </div>
-      </article>
+          </div>
+
+          {/* タイトル */}
+          <h1 className="mb-8 text-3xl font-bold leading-snug text-ink font-[family-name:var(--font-hand)]">
+            {post.title}
+          </h1>
+
+          {/* 本文 */}
+          <div
+            className="prose-brain"
+            dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+          />
+
+          {/* タグ */}
+          <div className="mt-10 flex flex-wrap gap-2 border-t border-dashed border-pencil/30 pt-6">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-highlight/40 px-3 py-1 text-xs text-ink"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </article>
+      </LabGate>
 
       {/* ── note への導線 ── */}
       {post.relatedNote && (

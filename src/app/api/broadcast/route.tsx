@@ -38,14 +38,44 @@ export async function POST(request: Request) {
       );
     }
 
+    const resend = getResendClient();
+
+    // ── 統計取得 (stats) ──
+    if (body.action === "stats") {
+      const audienceId = process.env.RESEND_AUDIENCE_ID;
+      if (!audienceId) {
+        return NextResponse.json({ error: "RESEND_AUDIENCE_ID is not set" }, { status: 500 });
+      }
+      const { data: contacts, error: listError } = await resend.contacts.list({ audienceId });
+      if (listError) {
+        return NextResponse.json({ error: `リスト取得失敗: ${JSON.stringify(listError)}` }, { status: 500 });
+      }
+      const now = new Date();
+      let total = 0;
+      let eligible = 0;
+      let educating = 0;
+
+      const activeSubscribers = (contacts?.data || []).filter((c: any) => !c.unsubscribed && c.email);
+      for (const c of activeSubscribers) {
+        total++;
+        const createdAt = new Date(c.created_at);
+        const diffTime = now.getTime() - createdAt.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays >= 7) {
+          eligible++;
+        } else {
+          educating++;
+        }
+      }
+      return NextResponse.json({ success: true, total, eligible, educating });
+    }
+
     if (!subject || !html) {
       return NextResponse.json(
         { error: "subject と html は必須です。" },
         { status: 400 }
       );
     }
-
-    const resend = getResendClient();
 
     // ── テスト送信モード ──
     if (testEmail) {
@@ -89,14 +119,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // 購読解除済みを除外
+    // 購読解除済みを除外、かつ登録から7日以上経過したユーザーのみ抽出
+    const now = new Date();
     const activeSubscribers = (contacts?.data || []).filter(
-      (c: any) => !c.unsubscribed && c.email
+      (c: any) => {
+        if (c.unsubscribed || !c.email) return false;
+        const createdAt = new Date(c.created_at);
+        const diffTime = now.getTime() - createdAt.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays >= 7;
+      }
     );
 
     if (activeSubscribers.length === 0) {
       return NextResponse.json(
-        { error: "配信対象の購読者がいません。" },
+        { error: "配信対象（登録から7日以上経過した購読者）がいません。" },
         { status: 400 }
       );
     }

@@ -1,25 +1,6 @@
-/**
- * LabCard — Lab記事のカードコンポーネント
- *
- * 左端にBNSカテゴリの色付き付箋タブを表示し、
- * ホバーで浮き上がるインタラクションを持つ。
- */
+import { Lock } from "lucide-react";
 
-interface LabCardProps {
-  slug: string;
-  title: string;
-  date: string;
-  category: "Body" | "Nerve" | "Story";
-  tags: string[];
-  excerpt: string;
-  relatedNote?: string;
-}
-
-const categoryConfig = {
-  Body: { color: "tab-body", emoji: "🦴", label: "Body" },
-  Nerve: { color: "tab-nerve", emoji: "🧠", label: "Nerve" },
-  Story: { color: "tab-story", emoji: "🧭", label: "Story" },
-};
+// ... (existing categoryConfig)
 
 export default function LabCard({
   slug,
@@ -35,7 +16,7 @@ export default function LabCard({
   return (
     <a
       href={`/lab/${slug}`}
-      className={`brain-card block rounded-xl bg-paper p-6 ${config.color} animate-fade-up`}
+      className={`brain-card group block rounded-xl bg-paper p-6 ${config.color} animate-fade-up`}
     >
       {/* カテゴリバッジ */}
       <div className="mb-3 flex items-center gap-2">
@@ -46,12 +27,11 @@ export default function LabCard({
         >
           {config.label}
         </span>
-        {category === "Nerve" && (
-          <span className="rounded-sm bg-ink/5 px-1.5 py-0.5 text-[10px] font-bold text-ink/40 border border-ink/10">
-            🔍 Advanced Research
-          </span>
-        )}
-        <span className="ml-auto text-xs text-pencil">{date}</span>
+        
+        <span className="ml-auto flex items-center gap-1.5 rounded-full bg-ink/5 px-2 py-0.5 text-[10px] font-bold text-pencil/60 border border-ink/5 group-hover:bg-clinical-blue/10 group-hover:text-clinical-blue group-hover:border-clinical-blue/20 transition-colors">
+          <Lock className="h-2.5 w-2.5" />
+          Lab Member Only
+        </span>
       </div>
 
       {/* タイトル */}
