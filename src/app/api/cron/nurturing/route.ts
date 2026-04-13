@@ -88,6 +88,20 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error("Nurturing Error:", error.message);
+    
+    // 管理者へアラートメールを送信
+    await resend.emails.send({
+      from: "System <kida@mochisura-lab.com>",
+      to: "kida@mochisura-lab.com",
+      subject: "⚠️ 【CRITICAL】M.O.C.H.I. LABO Nurturing Engine Error",
+      html: `
+        <h1>Nurturing Engine でエラーが発生しました</h1>
+        <p><strong>時間:</strong> ${new Date().toISOString()}</p>
+        <p><strong>エラー内容:</strong> ${error.message}</p>
+        <p>至急、Vercel のログを確認してください。</p>
+      `
+    }).catch(e => console.error("Failed to send alert email:", e));
+
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

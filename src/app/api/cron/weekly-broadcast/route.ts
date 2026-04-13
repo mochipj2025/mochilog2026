@@ -116,6 +116,20 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error("Weekly Broadcast Error:", error.message);
+
+    // 管理者へアラートメールを送信
+    await resend.emails.send({
+      from: "System <kida@mochisura-lab.com>",
+      to: "kida@mochisura-lab.com",
+      subject: "⚠️ 【CRITICAL】Weekly Broadcast Engine Error",
+      html: `
+        <h1>Weekly Broadcast Engine でエラーが発生しました</h1>
+        <p><strong>時間:</strong> ${new Date().toISOString()}</p>
+        <p><strong>エラー内容:</strong> ${error.message}</p>
+        <p>至急、原稿ファイルや Vercel のログを確認してください。</p>
+      `
+    }).catch(e => console.error("Failed to send alert email:", e));
+
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

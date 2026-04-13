@@ -1,5 +1,8 @@
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
 /**
  * /api/broadcast — メルマガ一斉配信エンドポイント
@@ -68,6 +71,68 @@ export async function POST(request: Request) {
         }
       }
       return NextResponse.json({ success: true, total, eligible, educating });
+    }
+
+    // ── ダッシュボード情報取得 (dashboard) ──
+    if (body.action === "dashboard") {
+      const newslettersDir = path.join(process.cwd(), "content", "newsletters");
+      const files = fs.existsSync(newslettersDir) ? fs.readdirSync(newslettersDir) : [];
+      
+      const now = new Date();
+      const upcoming: any[] = [];
+      const history: any[] = [];
+
+      // ファイルリストをパースして分類
+      for (const file of files) {
+        if (!file.endsWith(".md")) continue;
+        const fullPath = path.join(newslettersDir, file);
+        const fileContents = fs.readFileSync(fullPath, "utf8");
+        const { data: frontmatter } = matter(fileContents);
+        
+        // ファイル名から日付を抽出 (YYYY-MM-DD)
+        const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})/);
+        const fileDateStr = dateMatch ? dateMatch[1] : "";
+        const fileDate = fileDateStr ? new Date(fileDateStr) : new Date(0);
+
+        const item = {
+          file,
+          subject: frontmatter.subject || "No Subject",
+          date: fileDateStr,
+          title: frontmatter.title || "No Title",
+        };
+
+        if (fileDateStr && fileDate >= new Date(now.setHours(0,0,0,0))) {
+          upcoming.push(item);
+        } else {
+          history.push(item);
+        }
+      }
+
+      // 日付順にソート (未来分は昇順、履歴分は降順)
+      upcoming.sort((a, b) => a.date.localeCompare(b.date));
+      history.sort((a, b) => b.date.localeCompare(a.date));
+
+      return NextResponse.json({
+        success: true,
+        upcoming,
+        history,
+      });
+    }
+
+    // ── プレビュー取得 (preview) ──
+    if (body.action === "preview" && body.file) {
+      const newslettersDir = path.join(process.cwd(), "content", "newsletters");
+      const fullPath = path.join(newslettersDir, body.file);
+      if (!fs.existsSync(fullPath)) {
+        return NextResponse.json({ error: "File not found" }, { status: 404 });
+      }
+      const fileContents = fs.readFileSync(fullPath, "utf8");
+      const { data: frontmatter, content } = matter(fileContents);
+      return NextResponse.json({
+        success: true,
+        frontmatter,
+        content
+      });
     }
 
     if (!subject || !html) {
