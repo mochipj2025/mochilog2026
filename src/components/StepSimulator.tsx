@@ -170,7 +170,7 @@ export default function StepSimulator() {
                       </td>
                       <td>{user.status}</td>
                       <td className="actions-cell">
-                        <button className="text-btn reset-link" onClick={() => handleResetUser(user.email)}>Reset</button>
+                        <button className="text-btn reset-link" onClick={() => handleReset(user.email)}>Reset</button>
                         <span className="divider">|</span>
                         <button className="text-btn delete-link" onClick={() => handleDeleteUser(user.email)}>Remove</button>
                       </td>
@@ -195,8 +195,8 @@ export default function StepSimulator() {
             <h3>配信スケジュール</h3>
             <ul className="schedule-list">
               <li><strong>Step 1 (Day 1):</strong> なぜ、AIと砦を築くのか</li>
-              <li><strong>Step 2 (Day 2):</strong> 知性の外注｜Deep Research</li>
-              <li><strong>Step 3 (Day 3):</strong> 「ありがとう」は毒である</li>
+              <li><strong>Step 2 (Day 3):</strong> 知性の外注｜Deep Research</li>
+              <li><strong>Step 3 (Day 5):</strong> 「ありがとう」は毒である</li>
               <li><strong>Step 4 (Day 7):</strong> 3日間の沈黙と、指先のパルス</li>
             </ul>
           </div>
