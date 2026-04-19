@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request) {
   const steps: string[] = [];
+  // Database connection check trigger (Redeploying with POSTGRES_URL)
   try {
     const { secret } = await request.json();
     const expectedSecret = process.env.BROADCAST_SECRET?.trim();
