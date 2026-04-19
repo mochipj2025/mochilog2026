@@ -20,7 +20,7 @@ interface WeeklyLetterProps {
 }
 
 export const WeeklyLetter = ({
-  previewText = "きだからの週刊メルマガ。",
+  previewText = "もちスラからの、今週の手紙です。",
   title,
   htmlContent,
 }: WeeklyLetterProps) => (
@@ -37,7 +37,7 @@ export const WeeklyLetter = ({
             alt="Mochi-Sura"
             style={avatar}
           />
-          <Text style={subtitle}>M.O.C.H.I. LABO — Weekly Broadcast</Text>
+          <Text style={subtitle}>M.O.C.H.I. LABO — きだからの手紙</Text>
           <Heading style={h2}>{title}</Heading>
         </Section>
         <Hr style={hr} />
@@ -53,13 +53,13 @@ export const WeeklyLetter = ({
         
         <Section style={footer}>
           <Text style={footerText}>
-            きだ 記
+            もちスラ 記
             <br />
-            M.O.C.H.I. LABO | 安全基地としての臨床
+            M.O.C.H.I. LABO | 臨床の孤独を、学びに変える場所
           </Text>
           <Text style={footerLink}>
             <Link href="https://lab.mochisura-lab.com" style={link}>
-              Labログイン / 研究室を覗く
+              研究室（Lab）を覗きに行く
             </Link>
           </Text>
         </Section>

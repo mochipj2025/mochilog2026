@@ -18,25 +18,25 @@ export default function Home() {
       {/* ── Hero Section ── */}
       <section className="relative flex flex-col items-center justify-center py-24 px-6 text-center lg:py-32">
         <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-primary">
-          Clinical Research Lab
+          Mochi-Sura Lab
         </h2>
         <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl">
-          技術に、裏付けられた
+          臨床の孤独を、
           <br />
-          <span className="text-primary italic">静かな確信</span>を。
+          <span className="text-primary italic">「一生の学び」</span>に変える。
         </h1>
         <p className="mt-8 max-w-2xl text-lg leading-8 opacity-70 font-[family-name:var(--font-serif)]">
-          病院勤務15年の作業療法士が辿り着いた、身体・神経・物語を繋ぐ臨床の答え。
+          病院勤務15年の作業療法士が辿り着いた、身体・神経・物語を繋ぐ場所。
           <br />
-          「理論通りにいかない」と悩むすべてのセラピストへの、安全基地。
+          「理論通りにいかない」と一人で悩むすべてのセラピストへの、安全基地です。
         </p>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <a
             href="/lab"
             className="flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
           >
-            <span className="text-xl">🧪</span>
-            Labを覗く
+            <span className="text-xl">📔</span>
+            Labの中を覗く
           </a>
           <a
             href="https://note.com/mochisuranote"
@@ -63,32 +63,32 @@ export default function Home() {
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-body">
-              <div className="mb-6 text-4xl">🦴</div>
+              <div className="mb-6 text-4xl">🌱</div>
               <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-green)" }}>
                 Body (身体)
               </h3>
               <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
-                解剖学・起始停止を超えて。痛みは「患部の故障」ではなく「脳のエラー」であるという視点から、防衛反射を解除します。
+                解剖学や「起始停止」だけでは届かない領域があります。痛みは単なる故障ではなく、身体からの切実な「叫び」。その防衛のスイッチを、優しくオフにする方法を考えます。
               </p>
             </div>
 
             <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-nerve">
-              <div className="mb-6 text-4xl">🧠</div>
+              <div className="mb-6 text-4xl">🤝</div>
               <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-purple)" }}>
                 Nerve (神経)
               </h3>
               <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
-                触れることは、神経を調律すること。オキシトシンと迷走神経を活用し、身体を「安全モード」へと導きます。
+                触れることは、相手の神経と響き合うこと。生理学の裏付けを持って、お客様の身体を「戦いモード」から、深い安らぎの「安全モード」へとエスコートします。
               </p>
             </div>
 
             <div className="glass group rounded-3xl p-8 transition-all hover:bg-white/[0.05] tab-story">
-              <div className="mb-6 text-4xl">🧭</div>
+              <div className="mb-6 text-4xl">🎙️</div>
               <h3 className="mb-4 text-2xl font-bold" style={{ color: "var(--tab-amber)" }}>
                 Story (物語)
               </h3>
               <p className="text-sm leading-relaxed opacity-70 font-[family-name:var(--font-serif)]">
-                痛みの中にある文脈に耳を傾ける。セラピストが「安全基地」となることで、初めてクライアントは鎧を脱ぐことができます。
+                痛みの中にある、その人だけの物語（人生の文脈）に耳を傾けます。セラピストが「安全基地」となることで、お客様は初めて心の鎧を脱ぐことができるのです。
               </p>
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function Home() {
               きだからの手紙
             </h2>
             <p className="mb-8 text-sm leading-relaxed text-pencil font-[family-name:var(--font-serif)]">
-              note やブログには書けない、脳内の「最新のスパーク」を加工せずにそのまま届けます。
+              note や表のブログには書けない、日々のなかでふと思いついたことや、現場での気づき。等身大の想いを、ありのまま届けます。
             </p>
             <a
               href="/newsletter"

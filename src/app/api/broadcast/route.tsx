@@ -6,16 +6,6 @@ import matter from "gray-matter";
 
 /**
  * /api/broadcast — メルマガ一斉配信エンドポイント
- *
- * POST: 指定された件名・本文を、Resend Audience の全購読者に配信する。
- * パスワード認証付き（BROADCAST_SECRET 環境変数で保護）。
- *
- * リクエストボディ:
- *   { secret, subject, html, testEmail? }
- *   - secret: BROADCAST_SECRET と一致する文字列
- *   - subject: メールの件名
- *   - html: メール本文（HTML）
- *   - testEmail: （任意）テスト送信先。指定時は1通だけ送る
  */
 export const dynamic = "force-dynamic";
 
@@ -33,6 +23,9 @@ export async function POST(request: Request) {
     // ── 認証 ──
     const expectedSecret = process.env.BROADCAST_SECRET?.trim();
     const providedSecret = secret?.trim();
+
+    // デバッグログ: 認証情報の不整合を特定
+    console.log(`[Auth Debug] Provided: "${providedSecret}", Expected: "${expectedSecret}"`);
 
     if (!expectedSecret || providedSecret !== expectedSecret) {
       return NextResponse.json(
@@ -59,17 +52,18 @@ export async function POST(request: Request) {
       let educating = 0;
 
       const activeSubscribers = (contacts?.data || []).filter((c: any) => !c.unsubscribed && c.email);
-      for (const c of activeSubscribers) {
-        total++;
+      total = activeSubscribers.length;
+      
+      activeSubscribers.forEach((c: any) => {
         const createdAt = new Date(c.created_at);
-        const diffTime = now.getTime() - createdAt.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays >= 7) {
+        const daysDiff = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysDiff >= 7) {
           eligible++;
         } else {
           educating++;
         }
-      }
+      });
+      
       return NextResponse.json({ success: true, total, eligible, educating });
     }
 
@@ -82,14 +76,12 @@ export async function POST(request: Request) {
       const upcoming: any[] = [];
       const history: any[] = [];
 
-      // ファイルリストをパースして分類
       for (const file of files) {
         if (!file.endsWith(".md")) continue;
         const fullPath = path.join(newslettersDir, file);
         const fileContents = fs.readFileSync(fullPath, "utf8");
         const { data: frontmatter } = matter(fileContents);
         
-        // ファイル名から日付を抽出 (YYYY-MM-DD)
         const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})/);
         const fileDateStr = dateMatch ? dateMatch[1] : "";
         const fileDate = fileDateStr ? new Date(fileDateStr) : new Date(0);
@@ -108,7 +100,6 @@ export async function POST(request: Request) {
         }
       }
 
-      // 日付順にソート (未来分は昇順、履歴分は降順)
       upcoming.sort((a, b) => a.date.localeCompare(b.date));
       history.sort((a, b) => b.date.localeCompare(a.date));
 
@@ -144,12 +135,15 @@ export async function POST(request: Request) {
 
     // ── テスト送信モード ──
     if (testEmail) {
+      console.log(`[Test Send] Attempting to send to ${testEmail}...`);
       const { data, error } = await resend.emails.send({
-        from: "きだ <kida@mochisura-lab.com>",
+        from: "Mochi-Sura | Kida <kida@mochisura-lab.com>",
         to: testEmail,
         subject,
         html,
       });
+
+      console.log(`[Test Send Result] Data: ${JSON.stringify(data)}, Error: ${JSON.stringify(error)}`);
 
       if (error) {
         return NextResponse.json({ error: JSON.stringify(error) }, { status: 500 });
@@ -163,16 +157,15 @@ export async function POST(request: Request) {
       });
     }
 
-    // ── 本番配信：Resend Audience から購読者を取得 ──
+    // ── 本番配信 ──
     const audienceId = process.env.RESEND_AUDIENCE_ID;
     if (!audienceId) {
       return NextResponse.json(
-        { error: "RESEND_AUDIENCE_ID が設定されていません。Vercel の環境変数を確認してください。" },
+        { error: "RESEND_AUDIENCE_ID が設定されていません。" },
         { status: 500 }
       );
     }
 
-    // Resend Contacts API で購読者リストを取得
     const { data: contacts, error: listError } = await resend.contacts.list({
       audienceId,
     });
@@ -184,52 +177,37 @@ export async function POST(request: Request) {
       );
     }
 
-    // 購読解除済みを除外、かつ登録から7日以上経過したユーザーのみ抽出
-    const now = new Date();
     const activeSubscribers = (contacts?.data || []).filter(
-      (c: any) => {
-        if (c.unsubscribed || !c.email) return false;
-        const createdAt = new Date(c.created_at);
-        const diffTime = now.getTime() - createdAt.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays >= 7;
-      }
+      (c: any) => !c.unsubscribed && c.email
     );
 
     if (activeSubscribers.length === 0) {
       return NextResponse.json(
-        { error: "配信対象（登録から7日以上経過した購読者）がいません。" },
+        { error: "配信対象がいません。" },
         { status: 400 }
       );
     }
 
-    // ── Resend Batch Send（最大100件ずつ） ──
     const results: any[] = [];
     const batchSize = 50;
 
     for (let i = 0; i < activeSubscribers.length; i += batchSize) {
       const batch = activeSubscribers.slice(i, i + batchSize);
       const emails = batch.map((c: any) => ({
-        from: "きだ <kida@mochisura-lab.com>",
+        from: "Mochi-Sura | Kida <kida@mochisura-lab.com>",
         to: c.email,
         subject,
         html,
       }));
 
-      const { data: batchData, error: batchError } =
-        await resend.batch.send(emails);
+      const { data: batchData, error: batchError } = await resend.batch.send(emails);
 
       if (batchError) {
-        console.error(`Batch ${i / batchSize + 1} error:`, batchError);
         results.push({ batch: i / batchSize + 1, error: batchError });
       } else {
         results.push({ batch: i / batchSize + 1, sent: batch.length, data: batchData });
       }
     }
-
-    console.log(
-      `✅ メルマガ配信完了: ${activeSubscribers.length}件 / 件名: ${subject}`
-    );
 
     return NextResponse.json({
       success: true,
@@ -238,7 +216,7 @@ export async function POST(request: Request) {
       results,
     });
   } catch (error: any) {
-    console.error("Broadcast Error:", error?.message || error);
+    console.error("Broadcast API Error:", error);
     return NextResponse.json(
       { error: `System Error: ${error?.message || String(error)}` },
       { status: 500 }

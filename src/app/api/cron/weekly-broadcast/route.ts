@@ -20,7 +20,9 @@ export async function GET(request: Request) {
   // 1. セキュリティチェック (Vercel Cron Secret)
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
+    if (process.env.NODE_ENV !== 'development') {
+      return new Response("Unauthorized", { status: 401 });
+    }
   }
 
   if (!AUDIENCE_ID) {
@@ -62,18 +64,36 @@ export async function GET(request: Request) {
     const processedContent = await remark().use(html).process(content);
     const bodyHtml = processedContent.toString();
 
-    // 4. 購読者リストの取得とフィルタリング
-    const { data: contactsData, error: contactError } = await resend.contacts.list({
-      audienceId: AUDIENCE_ID,
-    });
+    // 4. 購読者リストの全件取得 (Pagination 対応)
+    console.log("Fetching all contacts from Resend Audience...");
+    let allContacts: any[] = [];
+    let hasMore = true;
+    let lastId: string | undefined = undefined;
 
-    if (contactError) {
-      throw new Error(`Failed to fetch contacts: ${JSON.stringify(contactError)}`);
+    while (hasMore) {
+      const { data, error }: any = await resend.contacts.list({
+        audienceId: AUDIENCE_ID,
+        limit: 100,
+        after: lastId
+      });
+
+      if (error) {
+        throw new Error(`Failed to fetch contacts: ${JSON.stringify(error)}`);
+      }
+
+      if (data && data.data) {
+        allContacts.push(...data.data);
+        hasMore = data.has_more;
+        if (hasMore && data.data.length > 0) {
+          lastId = data.data[data.data.length - 1].id;
+        }
+      } else {
+        hasMore = false;
+      }
     }
 
-    const contacts = contactsData?.data || [];
     // 登録から7日以上経過、かつ購読解除していない人を抽出
-    const eligibleSubscribers = contacts.filter((c: any) => {
+    const eligibleSubscribers = allContacts.filter((c: any) => {
       if (c.unsubscribed || !c.email) return false;
       const createdAt = new Date(c.created_at);
       const diffTime = now.getTime() - createdAt.getTime();
@@ -93,7 +113,7 @@ export async function GET(request: Request) {
     for (let i = 0; i < eligibleSubscribers.length; i += batchSize) {
       const batch = eligibleSubscribers.slice(i, i + batchSize);
       const emails = batch.map((c: any) => ({
-        from: "きだ <kida@mochisura-lab.com>",
+        from: "Mochi-Sura | Kida <kida@mochisura-lab.com>",
         to: c.email,
         subject: frontmatter.subject || "きだからの手紙",
         react: WeeklyLetter({
@@ -119,7 +139,7 @@ export async function GET(request: Request) {
 
     // 管理者へアラートメールを送信
     await resend.emails.send({
-      from: "System <kida@mochisura-lab.com>",
+      from: "Mochi-Sura | System <kida@mochisura-lab.com>",
       to: "kida@mochisura-lab.com",
       subject: "⚠️ 【CRITICAL】Weekly Broadcast Engine Error",
       html: `

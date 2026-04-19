@@ -23,7 +23,7 @@ export const newsletterSteps: NewsletterStep[] = [
     noteLink: "https://note.com/mochisuranote/n/xxxx",
   },
   {
-    day: 2,
+    day: 3,
     subject: "知性の外注｜Deep Researchが解き明かす臨床の深淵",
     previewText: "最新AIを「臨床推論」のパートナーにする技術。",
     title: "知性の外注｜Deep Researchと臨床の深淵",
@@ -33,7 +33,7 @@ export const newsletterSteps: NewsletterStep[] = [
     noteLink: "https://note.com/mochisuranote/n/yyyy",
   },
   {
-    day: 3,
+    day: 5,
     subject: "「ありがとう」は毒である｜依存の構造を解剖する",
     previewText: "セラピストが「聖人君子」を辞めるべき理由。",
     title: "「ありがとう」は毒である｜依存の構造",

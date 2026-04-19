@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { registerUser } from "@/lib/db";
 import MochiLetter from "../../../emails/MochiLetter";
 
 /**
@@ -48,9 +49,13 @@ export async function POST(request: Request) {
 
     const resend = getResendClient();
 
+    // ── 0. データベース（またはMock）に登録 ──
+    const newUser = await registerUser(email);
+    console.log("✅ データベース登録結果:", newUser ? "新規" : "既存またはMock");
+
     // ── 1. ウェルカムメールを送信 ──
     const { data, error } = await resend.emails.send({
-      from: "きだ <kida@mochisura-lab.com>",
+      from: "Mochi-Sura | Kida <kida@mochisura-lab.com>",
       to: email,
       subject: "きだからの手紙を受け取っていただき、ありがとうございます",
       react: <MochiLetter authorName="きだ" />,
@@ -66,7 +71,10 @@ export async function POST(request: Request) {
 
     console.log("✅ ウェルカムメール送信成功:", data);
 
-    // ── 2. Resend Audience に購読者を追加（リスト管理用） ──
+    // ── 2. DB登録結果の確認（進捗は 0 のまま = Cron対象にする） ──
+    console.log("✅ データベース登録結果:", newUser ? "新規" : "既存またはMock");
+
+    // ── 3. Resend Audience に購読者を追加（リスト管理用） ──
     // RESEND_AUDIENCE_ID が未設定の場合はスキップ（グレースフル・フォールバック）
     const audienceId = process.env.RESEND_AUDIENCE_ID;
     if (audienceId) {

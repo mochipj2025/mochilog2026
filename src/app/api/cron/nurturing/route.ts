@@ -2,63 +2,53 @@ import { Resend } from "resend";
 import { NextResponse } from "next/server";
 import { newsletterSteps } from "@/lib/newsletter-steps";
 import { DigestLetter } from "@/emails/DigestLetter";
+import { getPendingUsers, updateUserStep } from "@/lib/db";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
 
 export const dynamic = "force-dynamic";
 
+const BATCH_LIMIT = 50; // タイムアウト回避のための1回あたりの最大処理人数
+
 /**
- * Vercel Cron から呼び出されるステップメール配信エンドポイント
- * 毎朝9:00 JST (UTC 0:00) または 夜21:00 JST (UTC 12:00) に実行される想定
+ * Vercel Cron から呼び出されるステップメール配信エンジン (DB版)
+ * 登録後の経過日数と DB の current_step を照らし合わせて配信を行う。
  */
 export async function GET(request: Request) {
   // 1. セキュリティチェック (Vercel Cron Secret)
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  if (!AUDIENCE_ID) {
-    return NextResponse.json({ error: "AUDIENCE_ID not set" }, { status: 500 });
+    if (process.env.NODE_ENV !== 'development') {
+        return new Response("Unauthorized", { status: 401 });
+    }
   }
 
   try {
-    console.log("--- Nurturing Engine: Start Batch Processing ---");
-
-    // 2. 購読者リストを全取得 (Resend Contacts API)
-    const { data: contactsData, error: contactError } = await resend.contacts.list({
-      audienceId: AUDIENCE_ID,
-    });
-
-    if (contactError) {
-      throw new Error(`Failed to fetch contacts: ${JSON.stringify(contactError)}`);
-    }
-
-    const contacts = contactsData?.data || [];
-    console.log(`Targeting ${contacts.length} contacts.`);
-
+    console.log("--- Nurturing Engine DB-Drive: Start ---");
     const results = [];
-    const now = new Date();
+    let processedCount = 0;
 
-    // 3. 各購読者の経過日数を計算し、該当するステップがあれば送信
-    for (const contact of contacts) {
-      if (contact.unsubscribed) continue;
+    // ステップごとに処理 (Day 1, 2, 3, 7)
+    for (let i = 0; i < newsletterSteps.length; i++) {
+      if (processedCount >= BATCH_LIMIT) break;
 
-      const createdAt = new Date(contact.created_at);
-      // 経過日数を計算 (ミリ秒 -> 日)
-      const diffTime = now.getTime() - createdAt.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const step = newsletterSteps[i];
+      const stepIndex = i + 1; // 1通目, 2通目...
 
-      // 該当するステップを探す
-      const step = newsletterSteps.find((s) => s.day === diffDays);
+      // このステップに該当するユーザーを取得
+      // 条件: status='active' AND current_step < stepIndex AND 経過日数 >= step.day
+      const pendingUsers = await getPendingUsers(step.day, stepIndex, BATCH_LIMIT - processedCount);
+      
+      console.log(`Step ${stepIndex} (Day ${step.day}): found ${pendingUsers.length} pending users.`);
 
-      if (step) {
-        console.log(`Sending Day ${step.day} to ${contact.email} (Joined ${diffDays} days ago)`);
-        
-        const { data, error } = await resend.emails.send({
-          from: "きだ <kida@mochisura-lab.com>",
-          to: contact.email,
+      for (const user of pendingUsers) {
+        if (processedCount >= BATCH_LIMIT) break;
+
+        console.log(`Sending Step ${stepIndex} to ${user.email}`);
+
+        const { error } = await resend.emails.send({
+          from: "Mochi-Sura | Kida <kida@mochisura-lab.com>",
+          to: user.email,
           subject: step.subject,
           react: DigestLetter({
             previewText: step.previewText,
@@ -70,38 +60,26 @@ export async function GET(request: Request) {
           }),
         });
 
-        results.push({
-          email: contact.email,
-          step: step.day,
-          success: !error,
-          error: error || null,
-        });
+        if (!error) {
+          // 送信成功時のみ DB のステップを更新
+          await updateUserStep(user.id, stepIndex);
+          results.push({ email: user.email, step: stepIndex, success: true });
+        } else {
+          console.error(`Failed to send Step ${stepIndex} to ${user.email}:`, error);
+          results.push({ email: user.email, step: stepIndex, success: false, error });
+        }
+        processedCount++;
       }
     }
 
     return NextResponse.json({
       success: true,
-      processed: contacts.length,
-      sent: results.length,
+      sentTotal: results.length,
       details: results,
     });
 
   } catch (error: any) {
     console.error("Nurturing Error:", error.message);
-    
-    // 管理者へアラートメールを送信
-    await resend.emails.send({
-      from: "System <kida@mochisura-lab.com>",
-      to: "kida@mochisura-lab.com",
-      subject: "⚠️ 【CRITICAL】M.O.C.H.I. LABO Nurturing Engine Error",
-      html: `
-        <h1>Nurturing Engine でエラーが発生しました</h1>
-        <p><strong>時間:</strong> ${new Date().toISOString()}</p>
-        <p><strong>エラー内容:</strong> ${error.message}</p>
-        <p>至急、Vercel のログを確認してください。</p>
-      `
-    }).catch(e => console.error("Failed to send alert email:", e));
-
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

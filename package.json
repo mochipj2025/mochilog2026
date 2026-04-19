@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.6",
+    "@vercel/postgres": "^0.10.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.8.0",
     "next": "16.2.2",
