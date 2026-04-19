@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
  * schema.sql の内容を本番DBに適用する。
  */
 export async function POST(request: Request) {
+  const steps: string[] = [];
   try {
     const { secret } = await request.json();
     const expectedSecret = process.env.BROADCAST_SECRET?.trim();
@@ -16,9 +17,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("🚀 DB Initialization Started...");
-
-    // テーブル作成
+    // 1. users table
+    steps.push("Creating users table");
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -29,6 +29,8 @@ export async function POST(request: Request) {
       );
     `;
 
+    // 2. delivery_logs table
+    steps.push("Creating delivery_logs table");
     await sql`
       CREATE TABLE IF NOT EXISTS delivery_logs (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -40,22 +42,24 @@ export async function POST(request: Request) {
       );
     `;
 
-    // インデックス作成
+    // 3. indexes
+    steps.push("Creating indexes");
     await sql`CREATE INDEX IF NOT EXISTS idx_users_status_step ON users(status, current_step);`;
     await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);`;
 
     return NextResponse.json({ 
       success: true, 
       message: "Database initialized successfully.",
-      tables: ["users", "delivery_logs"],
-      indexes: ["idx_users_status_step", "idx_users_email"]
+      completedSteps: steps
     });
 
   } catch (error: any) {
     console.error("DB Init Error:", error);
     return NextResponse.json({ 
       success: false, 
-      error: error.message || "Unknown error during DB initialization" 
+      error: error.message || "Unknown error",
+      lastStep: steps[steps.length - 1],
+      hint: "Make sure POSTGRES_URL is set in Vercel environment variables."
     }, { status: 500 });
   }
 }
