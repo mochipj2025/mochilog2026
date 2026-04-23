@@ -141,9 +141,13 @@ export default function AdminDashboardPage() {
   const handleRunCronNow = async () => {
     notify("配信エンジン点火中...");
     try {
-      const res = await fetch("/api/cron/nurturing");
+      const res = await fetch("/api/cron/nurturing", {
+        headers: {
+          "Authorization": `Bearer ${secret}`
+        }
+      });
       const data = await res.json();
-      notify(`配信完了: ${data.processedCount || 0}通送信`);
+      notify(`配信完了: ${data.sentTotal || 0}通送信`);
       fetchUsers();
     } catch (err) {
       setErrorVisible("エンジン点火失敗");

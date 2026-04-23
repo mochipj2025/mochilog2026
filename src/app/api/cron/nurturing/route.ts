@@ -15,12 +15,19 @@ const BATCH_LIMIT = 50; // タイムアウト回避のための1回あたりの�
  * 登録後の経過日数と DB の current_step を照らし合わせて配信を行う。
  */
 export async function GET(request: Request) {
-  // 1. セキュリティチェック (Vercel Cron Secret)
+  // 1. セキュリティチェック (Vercel Cron Secret または Broadcast Secret)
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    if (process.env.NODE_ENV !== 'development') {
-        return new Response("Unauthorized", { status: 401 });
-    }
+  const providedSecret = authHeader?.replace("Bearer ", "");
+  const cronSecret = process.env.CRON_SECRET;
+  const broadcastSecret = process.env.BROADCAST_SECRET;
+
+  const isAuthenticated = 
+    providedSecret === cronSecret || 
+    providedSecret === broadcastSecret ||
+    process.env.NODE_ENV === 'development';
+
+  if (!isAuthenticated) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   try {
