@@ -86,6 +86,10 @@ export const DigestLetter = ({
             <Link href="https://lab.mochisura-lab.com" style={link}>
               Labを覗く
             </Link>
+            {" | "}
+            <Link href="{{unsubscribe_url}}" style={link}>
+              配信停止はこちら
+            </Link>
           </Text>
         </Section>
       </Container>

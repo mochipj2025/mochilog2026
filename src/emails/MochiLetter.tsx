@@ -81,6 +81,10 @@ export const MochiLetter = ({
             <Link href="https://note.com/mochisuranote" style={link}>
               note
             </Link>
+            {" | "}
+            <Link href="{{unsubscribe_url}}" style={link}>
+              配信停止はこちら
+            </Link>
           </Text>
         </Section>
       </Container>

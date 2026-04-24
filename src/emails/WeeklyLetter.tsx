@@ -61,6 +61,10 @@ export const WeeklyLetter = ({
             <Link href="https://lab.mochisura-lab.com" style={link}>
               研究室（Lab）を覗きに行く
             </Link>
+            {" | "}
+            <Link href="{{unsubscribe_url}}" style={link}>
+              配信停止はこちら
+            </Link>
           </Text>
         </Section>
       </Container>
