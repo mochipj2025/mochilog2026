@@ -69,10 +69,10 @@ export const DigestLetter = ({
         
         <Section style={ctaSection}>
           <Text style={text}>
-            この記事の全文と、さらに深い洞察はnoteで公開しています。
+            さらに深い洞察と臨床のリアルは、Substackのラボで公開しています。
           </Text>
           <Link href={noteLink} style={button}>
-            note本編を読む
+            Substack ラボへ向かう
           </Link>
         </Section>
 

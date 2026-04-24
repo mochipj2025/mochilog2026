@@ -1,4 +1,3 @@
-import { DigestLetter } from "../emails/DigestLetter";
 
 export interface NewsletterStep {
   day: number;
